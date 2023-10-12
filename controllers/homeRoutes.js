@@ -21,7 +21,31 @@ router.get('/', async (req, res) => {
         });
     } catch (err) {
         console.log(err);
-        res.status(500).json(err);
+        res.status(500).json('Internal Service Error');
+    }
+});
+
+router.get('/dashboard', async (req, res) => {
+    try {
+        const blogData = await Blog.findAll({
+            include: [
+                {
+                    model: User,
+                    attributes: ['name'],
+                },
+            ],
+        });
+
+        const blogs = blogData.map((blog) =>
+            blog.get({ plain: true })
+        );
+        res.render('dashboard', {
+            blogs,
+            loggedIn: req.session.loggedIn,
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json('Internal Service Error');
     }
 });
 
@@ -40,7 +64,7 @@ router.get('/blogpost/:id', async (req, res) => {
         res.render('blogpost', { posts, loggedIn: req.session.loggedIn });
     } catch (err) {
         console.log(err);
-        res.status(500).json(err);
+        res.status(500).json('Internal Service Error');
     }
 });
   
